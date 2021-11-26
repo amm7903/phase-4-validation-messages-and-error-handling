@@ -2,6 +2,7 @@ import { useState } from "react";
 import styled from "styled-components";
 
 function MovieForm() {
+  const [errors, setErrors] = useState([]);
   const [formData, setFormData] = useState({
     title: "",
     year: new Date().getFullYear(),
@@ -22,9 +23,17 @@ function MovieForm() {
         "Content-Type": "application/json",
       },
       body: JSON.stringify(formData),
+    }).then((response) => {
+      if (response.ok) {
+        response.json().then((newMovie) => console.log(newMovie));
+      } else {
+        response.json().then((errorData) => setErrors(errorData.errors));
+      }
     })
-      .then((response) => response.json())
-      .then((newMovie) => console.log(newMovie));
+    
+    // console.log(response));
+      // .then((response) => response.json())
+      // .then((newMovie) => console.log(newMovie));
   }
 
   function handleChange(e) {
@@ -125,6 +134,14 @@ function MovieForm() {
             />
           </label>
         </FormGroup>
+        {errors.length > 0 && (
+    <ul style={{ color: "red" }}>
+      {errors.map((error) => (
+        <li key={error}>{error}</li>
+      ))}
+    </ul>
+  )}
+
         <SubmitButton type="submit">Add Movie</SubmitButton>
       </form>
     </Wrapper>
@@ -155,3 +172,7 @@ const SubmitButton = styled.button`
 `;
 
 export default MovieForm;
+
+//We can successfully detect a successful and unsuccessful response using fetch
+// by looking at out console, if 200-300 succssful. if 400-500 error
+//so they can see the error in their data
